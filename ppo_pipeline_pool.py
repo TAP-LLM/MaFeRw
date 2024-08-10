@@ -1,7 +1,6 @@
 import os
 os.environ["TOKENIZERS_PARALLELISM"] = "True"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import torch
 import json
 from accelerate import Accelerator
@@ -27,7 +26,7 @@ class NameFilter(logging.Filter):
 
 logger = logging.getLogger('gen_set')
 logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('ppo_general_topio.log')
+file_handler = logging.FileHandler('ppo_general.log')
 file_handler.setLevel(logging.INFO)
 name_filter = NameFilter('gen_set')
 file_handler.addFilter(name_filter)
@@ -227,18 +226,18 @@ if __name__ == '__main__':
     multiprocessing.set_start_method('spawn')
     rouge = evaluate.load("./metrics/rouge")
     random.seed(args.seed)
-    tokenizer = AutoTokenizer.from_pretrained("output/train_topiocqa/Checkpoint/ANCE-rewrite_1-final-model")
-    model = AutoModelForSeq2SeqLMWithValueHead.from_pretrained("output/train_topiocqa/Checkpoint/ANCE-rewrite_1-final-model",
+    tokenizer = AutoTokenizer.from_pretrained("PATH/TO/THE/INITIALIZED/REWRITER")
+    model = AutoModelForSeq2SeqLMWithValueHead.from_pretrained("PATH/TO/THE/INITIALIZED/REWRITER",
                                                                device_map={"": args.current_device})
     ref_model = AutoModelForSeq2SeqLMWithValueHead.from_pretrained(
-        "output/train_topiocqa/Checkpoint/ANCE-rewrite_1-final-model",
+        "PATH/TO/THE/INITIALIZED/REWRITER",
         device_map={"": args.current_device})
 
     special_tokens_dict = {"sep_token": "<sep>"}
     tokenizer.add_special_tokens(special_tokens_dict)
-    rouge_reward_model_name = "output/train_RM_rouge-topio/Checkpoint"
-    rank_reward_model_name = "output/train_RM_rank-topio/checkpoint-30000"
-    cos_reward_model_name = "output/train_RM_cos-topio/checkpoint-30000"
+    rouge_reward_model_name = "PATH/TO/THE/REWARD_MODEL"
+    rank_reward_model_name = "PATH/TO/THE/REWARD_MODEL"
+    cos_reward_model_name = "PATH/TO/THE/REWARD_MODEL"
     reward_pipes = {
         "rouge": pipeline(task="text-classification", model=rouge_reward_model_name, device_map={"": args.current_device}, batch_size=args.batch_size),
         # device_map="auto"),
@@ -248,11 +247,11 @@ if __name__ == '__main__':
     for pipe in list(reward_pipes.values()):
         pipe.tokenizer.add_special_tokens(special_tokens_dict)
 
-    train_dataset = RL_dataset(args, tokenizer, "dataset/topiocqa/train_new.json")
+    train_dataset = RL_dataset(args, tokenizer, "PATH/TO/THE/DATASET")
     ppo_config = PPOConfig(
         seed=42,
         log_with="tensorboard",
-        project_kwargs={"logging_dir": "output/train_ppo_general_topio"},
+        project_kwargs={"logging_dir": "output/train_ppo_general"},
         adap_kl_ctrl=True,
         init_kl_coef=0.05,
         target=1,
@@ -282,11 +281,6 @@ if __name__ == '__main__':
 
     generation_kwargs = {
         "max_length": args.max_query_length,
-        # "min_length": args.max_query_length//10,  # don't ignore the EOS token (see above)
-        # "top_k": 0.0,  # no top-k sampling
-        # "top_p": 1.0,  # no nucleus sampling
-        # "do_sample": True,  # yes, we want to sample
-        # "pad_token_id": tokenizer.eos_token_id,
     }
     num_rounds = ppo_config.total_ppo_epochs // len(ppo_trainer.dataloader) + 1
     pool = multiprocessing.Pool(len(reward_pipes))  # len(reward_pipes))
@@ -302,19 +296,9 @@ if __name__ == '__main__':
                 logger.info(f"res: {batch['response'][0]}")
                 logger.info(f"lab: {batch['label'][0]}")
 
-            # rewards = score_label(batch["response"], batch["label"])
-            # ref_rewards = score_label(batch["ref_response"], batch["label"])
-            # rewards = get_each_rewards(batch["context"], batch["response"], rouge_reward_pipe, sent_kwargs)
-            # ref_rewards = get_each_rewards(batch["context"], batch["ref_response"], rouge_reward_pipe, sent_kwargs)
             texts = [q + r for q, r in zip(batch["context"], batch["response"])]
             rewards = get_general_rewards(texts, batch["response"], batch["label"], reward_pipes, weights,
                                           sent_kwargs)
-            # ref_texts = [q + r for q, r in zip(batch["context"], batch["ref_response"])]
-            # ref_rewards = get_general_rewards(ref_texts, batch["ref_response"], batch["label"], reward_pipes,
-            #                                   weights,
-            #                                   sent_kwargs)
-            #
-            # batch["ref_rewards"] = ref_rewards
             stats = ppo_trainer.step(query_tensors, response_tensors, rewards)
             ppo_trainer.log_stats(stats, batch, rewards,
                                   columns_to_log=["query", "response", "ref_response"])  # , "ref_rewards"])
