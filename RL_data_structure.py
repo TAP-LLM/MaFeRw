@@ -50,7 +50,7 @@ class TestRag_Dataset_wsdm(Dataset):
 
         for line in tqdm(data):
             record = line
-            flat_concat = []  # 改写模型的输入
+            flat_concat = [] 
             style_prompt = ""
             cur_utt_text = record["question"]
             ctx_utts_text = []
@@ -135,7 +135,7 @@ class TestRag_Dataset_wsdm(Dataset):
                 collated_dict["bt_input_ids"].append(example[1])
                 collated_dict["bt_attention_mask"].append(example[2])
                 collated_dict["bt_answers"].append(example[3])
-                collated_dict["bt_cur_utt_text"].append(example[4])  # 当前question 非ids
+                collated_dict["bt_cur_utt_text"].append(example[4]) 
                 collated_dict["bt_pos_docs"].append(example[5])
                 collated_dict["bt_style_prompt"].append(example[6])
                 collated_dict["bt_context"].append(example[7])
@@ -169,7 +169,7 @@ class RewriteRag_Dataset_topiocqa(Dataset):
 
         for line in tqdm(data):
             record = json.loads(line)
-            flat_concat = []  # 改写模型的输入
+            flat_concat = []
             style_prompt = ""
             cur_utt_text = record['query']
             ctx_utts_text = []
@@ -337,7 +337,7 @@ class RewriteRag_Dataset_qrecc(Dataset):
 
         for line in tqdm(data):
             record = json.loads(line)
-            flat_concat = []  # 改写模型的输入
+            flat_concat = [] 
             style_prompt = ""
             cur_utt_text = record['cur_utt_text']
             ctx_utts_text = record['ctx_utts_text']
@@ -500,7 +500,7 @@ class Rag_MRR_Dataset_qrecc(Dataset):
 
         for line in tqdm(data):
             record = json.loads(line)
-            flat_concat = []  # 改写模型的输入
+            flat_concat = [] 
             style_prompt = ""
             cur_utt_text = record['cur_utt_text']
             ctx_utts_text = record['ctx_utts_text']
@@ -595,8 +595,8 @@ class Rag_MRR_Dataset_qrecc(Dataset):
                 collated_dict["bt_target_ids"].append(example[3])
                 collated_dict["bt_target_mask"].append(example[4])
                 collated_dict["bt_answers"].append(example[5])
-                collated_dict["bt_cur_utt_text"].append(example[6])  # 当前question 非ids
-                collated_dict["bt_oracle_utt_text"].append(example[7])  # 改写的question 非ids
+                collated_dict["bt_cur_utt_text"].append(example[6])
+                collated_dict["bt_oracle_utt_text"].append(example[7])
                 collated_dict["bt_pos_docs"].append(example[8][0])
                 collated_dict["bt_neg_docs"].append(example[9][0])
                 collated_dict["bt_style_prompt"].append(example[10])
