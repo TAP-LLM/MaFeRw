@@ -1,6 +1,5 @@
 import os
 
-os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 import logging
 class NameFilter(logging.Filter):
     def __init__(self, name):
@@ -8,7 +7,6 @@ class NameFilter(logging.Filter):
         self.name = name
 
     def filter(self, record):
-        # 仅当记录器名称以self.name开头时才允许记录
         return record.name.startswith(self.name)
 
 
@@ -36,14 +34,14 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--pretrained_rewriter", type=str,
-                        default="output/train_topiocqa/Checkpoint/ANCE-rewrite_1-final-model")
+                        default="PATH/TO/THE/PRETRAINED/REWRITER")
     parser.add_argument("--pretrained_optimizer", type=str,
-                        default="output/train_qrecc/Checkpoint/optimizer_RL_2_8000.pth")
+                        default="PATH/TO/THE/PRETRAINED/OPTIMIZER")
 
-    parser.add_argument("--train_file_path", type=str, default="datasets/qrecc/new_preprocessed/train_with_doc.json")
-    parser.add_argument("--log_dir_path", type=str, default="output/train_topiocqa/Log")
-    parser.add_argument('--model_output_path', type=str, default="output/train_qrecc/Checkpoint")
-    parser.add_argument("--faiss_path", type=str, default="faiss_all_token_topio")
+    parser.add_argument("--train_file_path", type=str, default="PATH/TO/THE/DATASET")
+    parser.add_argument("--log_dir_path", type=str, default="output/Log")
+    parser.add_argument('--model_output_path', type=str, default="output/Checkpoint")
+    parser.add_argument("--faiss_path", type=str, default="PATH/TO/THE/FATSS")
     parser.add_argument("--decode_type", type=str, default="RL_2")
     parser.add_argument("--reward_rouge_type", type=str, default="rouge1")
     parser.add_argument("--batch_size", type=int, default=1)
@@ -84,9 +82,9 @@ train_loader = DataLoader(train_dataset,
 print("Initializing RL env...")
 rag_env = rag_environment(args)
 
-outputfile_rouge = "/home/wangyujing/query-rewrite/dataset/topiocqa/RL-train_rouge.json"
-outputfile_rank = "/home/wangyujing/query-rewrite/dataset/topiocqa/RL-train_rank.json"
-outputfile_cos = "/home/wangyujing/query-rewrite/dataset/topiocqa/RL-train_cos.json"
+outputfile_rouge = "dataset/RL-train_rouge.json"
+outputfile_rank = "dataset/RL-train_rank.json"
+outputfile_cos = "dataset/RL-train_cos.json"
 
 num_batch = 0
 with open(outputfile_cos, "w") as f_cos, open(outputfile_rank, "w") as f_rank, open(outputfile_rouge, "w") as f_rouge:
@@ -99,20 +97,17 @@ with open(outputfile_cos, "w") as f_cos, open(outputfile_rank, "w") as f_rank, o
         context = batch['bt_context']
         bt_style_prompt = batch['bt_style_prompt']
         rewrite_targets = batch['bt_oracle_utt_text']
-        ctx_q_ids = batch['bt_input_ids'].to(args.device)  # T5的输入
-        ctx_q_mask = batch['bt_attention_mask'].to(args.device)  # T5的输入
-        answers = batch['bt_answers']  # answer不要ids
-        target_q_ids = batch['bt_target_ids'].to(args.device)  # oracle是ids
-        target_q_mask = batch['bt_target_mask'].to(args.device)  # oracle是mask
+        ctx_q_ids = batch['bt_input_ids'].to(args.device) 
+        ctx_q_mask = batch['bt_attention_mask'].to(args.device) 
+        answers = batch['bt_answers']
+        target_q_ids = batch['bt_target_ids'].to(args.device)  
+        target_q_mask = batch['bt_target_mask'].to(args.device) 
         labels = shift_target_inputs_to_labels(target_q_ids, rewrite_tokenizer.pad_token_id, args.device)
         """
                <bos> word1 word2 word3 <eos> (target input)
                word1 word2 word3 <eos> <pad> (target label)
                from https://github.com/znculee/finetune-transformers (MIT License)
                """
-        # 利用T5-base进行query rewrite
-        # 所以需要把target转成label
-        # greedy query是generate得到的
         rewrite_model.eval()
         with torch.no_grad():
             greedy_ids = rewrite_model.generate(
