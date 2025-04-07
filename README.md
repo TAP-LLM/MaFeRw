@@ -18,6 +18,18 @@ pip install -r requirements.txt
 
 Public datasets can be download from [QReCC](https://github.com/apple/ml-qrecc), [TopiOCQA](https://github.com/McGill-NLP/topiocqa). Data preprocessing follow the approach in [this work](https://github.com/fengranMark/ConvGQR/tree/main).
 
+## Rewriter Initialize
+
+Initialize the rewriter by running ```train_rewriter_initialize.py``` to SFT the T5-base model.
+
+## Reward Model Traing
+
+The data for reward model traing can be collected by running ```gen_RL_dataset.py```. And use the rewriter after SFT and the collected data to train the corresponding RMs through running ```reward_modeling.py```. 
+
+## RL Training
+
+Run ```ppo_pipeline_pool.py``` with your selecting parameters to further train the rewriter with PPO.
+
 ## References
 The code for dataset processing refers to https://github.com/fengranMark/ConvGQR/tree/main.
 
