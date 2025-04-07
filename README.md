@@ -16,7 +16,8 @@ pip install -r requirements.txt
 ```
 ## Download data and Preprocessing
 
-Public datasets can be download from [QReCC](https://github.com/apple/ml-qrecc), [TopiOCQA](https://github.com/McGill-NLP/topiocqa).
+Public datasets can be download from [QReCC](https://github.com/apple/ml-qrecc), [TopiOCQA](https://github.com/McGill-NLP/topiocqa). Data preprocessing follow the approach in [this work](https://github.com/fengranMark/ConvGQR/tree/main).
+
 ## References
 The code for dataset processing refers to https://github.com/fengranMark/ConvGQR/tree/main.
 
