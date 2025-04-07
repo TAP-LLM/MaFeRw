@@ -34,3 +34,15 @@ Run ```ppo_pipeline_pool.py``` with your selecting parameters to further train t
 The code for dataset processing refers to https://github.com/fengranMark/ConvGQR/tree/main.
 
 The code for training the reward model and reinforcement learning refers to https://github.com/huggingface/trl.
+
+## Cite Format
+
+    @misc{wang2024maferwqueryrewritingmultiaspect,
+      title={MaFeRw: Query Rewriting with Multi-Aspect Feedbacks for Retrieval-Augmented Large Language Models}, 
+      author={Yujing Wang and Hainan Zhang and Liang Pang and Binghui Guo and Hongwei Zheng and Zhiming Zheng},
+      year={2024},
+      eprint={2408.17072},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2408.17072}, 
+      }
