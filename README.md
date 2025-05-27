@@ -1,5 +1,5 @@
 # MaFeRw
-source code for the paper 'MaFeRw: Query Rewriting with Multi-Aspect Feedbacks for Retrieval-Augmented Large Language Models'
+source code for the paper '[MaFeRw: Query Rewriting with Multi-Aspect Feedbacks for Retrieval-Augmented Large Language Models](https://ojs.aaai.org/index.php/AAAI/article/view/34732)'
 ## Code Structure
 ```utilities``` contains all helper functions, including RAG environment and utils.\
 ```RL_data_structure.py``` contains methods for constructing and calling datasets\
