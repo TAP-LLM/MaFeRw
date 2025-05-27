@@ -37,12 +37,12 @@ The code for training the reward model and reinforcement learning refers to http
 
 ## Cite Format
 
-    @misc{wang2024maferwqueryrewritingmultiaspect,
-      title={MaFeRw: Query Rewriting with Multi-Aspect Feedbacks for Retrieval-Augmented Large Language Models}, 
-      author={Yujing Wang and Hainan Zhang and Liang Pang and Binghui Guo and Hongwei Zheng and Zhiming Zheng},
-      year={2024},
-      eprint={2408.17072},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2408.17072}, 
-      }
+    @inproceedings{wang2025maferw,
+      title={MaFeRw: Query rewriting with multi-aspect feedbacks for retrieval-augmented large language models},
+      author={Wang, Yujing and Zhang, Hainan and Pang, Liang and Guo, Binghui and Zheng, Hongwei and Zheng, Zhiming},
+      booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+      volume={39},
+      number={24},
+      pages={25434--25442},
+      year={2025}
+    }
